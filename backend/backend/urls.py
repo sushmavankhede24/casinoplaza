@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Auth routes
     path("api/", include("accounts.urls")),
+    path("api/", include("game.urls")),
 
     # JWT endpoints
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
