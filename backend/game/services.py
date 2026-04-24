@@ -86,3 +86,40 @@ def spin_game(session: GameSession) -> Dict[str, object]:
         "reward": reward,
         "credits": session.credits,
     }
+
+
+@transaction.atomic
+def cashout_session(session: GameSession) -> Dict[str, object]:
+    """
+    Cash out the current game session.
+
+    Transfers remaining credits to the user's wallet
+    and marks the session as inactive.
+    """
+
+    # Ensure session has credits
+    if session.credits <= 0:
+        session.is_active = False
+        session.save()
+        raise ValueError("No credits available to cash out.")
+
+    user = session.user
+
+    # Store amount to transfer
+    cashout_amount = session.credits
+
+    # Transfer credits to wallet
+    user.wallet_balance += cashout_amount
+
+    # End session
+    session.credits = 0
+    session.is_active = False
+
+    # Save changes
+    user.save()
+    session.save()
+
+    return {
+        "cashed_out": cashout_amount,
+        "wallet_balance": user.wallet_balance,
+    }

@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import GameSession
 from .serializers import GameSessionSerializer
-from .services import spin_game
+from .services import spin_game, cashout_session
 
 
 # Create your views here.
@@ -63,6 +63,43 @@ class SpinView(APIView):
 
         try:
             result = spin_game(session)
+
+        except ValueError as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class CashoutView(APIView):
+    """
+    Cash out the current user's active session.
+
+    Transfers remaining session credits to the user's wallet
+    and marks the session as inactive.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        # Get active session
+        session = GameSession.objects.filter(
+            user=user,
+            is_active=True
+        ).first()
+
+        if not session:
+            return Response(
+                {"detail": "No active session found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            result = cashout_session(session)
 
         except ValueError as e:
             return Response(
