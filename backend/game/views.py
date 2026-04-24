@@ -108,3 +108,32 @@ class CashoutView(APIView):
             )
 
         return Response(result, status=status.HTTP_200_OK)
+    
+
+class GameStatusView(APIView):
+    """
+    Retrieve the current game status for the authenticated user.
+
+    Returns current session credits, wallet balance,
+    and whether an active session exists.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Get active session (if any)
+        session = GameSession.objects.filter(
+            user=user,
+            is_active=True
+        ).first()
+
+        return Response(
+            {
+                "credits": session.credits if session else 0,
+                "wallet_balance": user.wallet_balance,
+                "is_active": bool(session),
+            },
+            status=status.HTTP_200_OK
+        )
