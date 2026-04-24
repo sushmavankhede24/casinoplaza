@@ -1,6 +1,12 @@
 <template>
   <div class="wrapper">
-    <div class="card">
+    <div class="top-bar">
+      <button class="logout-btn" @click="handleLogout">
+            Logout
+      </button>
+    </div>
+
+     <div class="card">
       <h2>Casino Plaza</h2>
       <p>Welcome! You are logged in.</p>
 
@@ -22,7 +28,11 @@
 
       <!-- RESULT -->
       <div v-if="game.result" class="result">
-        <p>Symbols: {{ game.result.symbols.join(" | ") }}</p>
+         <p> Symbols:
+            <span v-for="(symbol, index) in game.result.symbols" :key="index">
+            {{ getEmoji(symbol) }}&nbsp;
+            </span>
+         </p>
         <p>Reward: {{ game.result.reward }}</p>
       </div>
     </div>
@@ -32,9 +42,28 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useGameStore } from "../stores/game";
+import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
 const game = useGameStore();
 const error = ref("");
+const auth = useAuthStore();
+const router = useRouter();
+
+const handleLogout = () => {
+  auth.logout();
+  router.push("/login");
+};
+
+const getEmoji = (symbol) => {
+  const map = {
+    cherry: "🍒",
+    lemon: "🍋",
+    orange: "🍊",
+    watermelon: "🍉",
+  };
+  return map[symbol] || symbol;
+};
 
 const handleStartSession = async () => {
   error.value = "";
@@ -73,6 +102,7 @@ onMounted(() => {
 
 <style scoped>
 .wrapper {
+  position: relative;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -81,6 +111,7 @@ onMounted(() => {
 }
 
 .card {
+  position: relative;
   background: white;
   padding: 30px;
   border-radius: 12px;
@@ -120,5 +151,30 @@ onMounted(() => {
   margin-top: 10px;
   color: #555;
   font-size: 13px;
+}
+
+.top-bar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.logout-btn {
+  padding: 8px 12px;
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.logout-btn:hover {
+  background: #d9363e;
+}
+
+.result span {
+  font-size: 24px;
+  margin: 0 4px;
 }
 </style>

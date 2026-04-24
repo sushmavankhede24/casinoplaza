@@ -1,58 +1,58 @@
 <template>
   <div class="wrapper">
-    <div class="login-card">
+    <div class="card">
       <h1>Casino Plaza</h1>
-      <p class="subtitle">Login to start playing</p>
+      <p class="subtitle">Create your account</p>
 
-      <input
-        v-model="username"
-        placeholder="Username"
-        class="input"
-      />
+      <input v-model="username" placeholder="Username" class="input" />
+      <input v-model="password" type="password" placeholder="Password" class="input" />
 
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        class="input"
-      />
-
-      <button @click="handleLogin" class="btn"> Login </button>
-
-      <p class="link"> Don’t have an account?
-        <span @click="goToRegister">Register</span>
-      </p>
+      <button @click="handleRegister" class="btn">
+        Register
+      </button>
 
       <p v-if="error" class="error">{{ error }}</p>
+
+      <p class="link">
+        Already have an account?
+        <span @click="goToLogin">Login</span>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { useAuthStore } from "../stores/auth";
+import API from "../services/api";
 import { useRouter } from "vue-router";
 
 const username = ref("");
 const password = ref("");
 const error = ref("");
 
-const auth = useAuthStore();
 const router = useRouter();
 
-const goToRegister = () => {
-  router.push("/register");
-};
-
-const handleLogin = async () => {
+const handleRegister = async () => {
   error.value = "";
 
   try {
-    await auth.login(username.value.trim(), password.value.trim());
-    router.push("/game");
+    await API.post("register/", {
+      username: username.value.trim(),
+      password: password.value.trim(),
+    });
+
+    alert("Registration successful!");
+    router.push("/login");
   } catch (err) {
-    error.value = "Invalid username or password";
+    error.value =
+      err.response?.data?.username?.[0] ||
+      err.response?.data?.password?.[0] ||
+      "Registration failed";
   }
+};
+
+const goToLogin = () => {
+  router.push("/login");
 };
 </script>
 
@@ -65,17 +65,12 @@ const handleLogin = async () => {
   background: linear-gradient(135deg, #1e1e2f, #2c2c54);
 }
 
-.login-card {
-  background: #ffffff;
+.card {
+  background: white;
   padding: 35px;
   border-radius: 12px;
   width: 320px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
-}
-
-h1 {
-  margin-bottom: 5px;
 }
 
 .subtitle {
@@ -90,27 +85,17 @@ h1 {
   margin: 10px 0;
   border: 1px solid #ddd;
   border-radius: 6px;
-  outline: none;
-  transition: 0.2s;
   box-sizing: border-box; 
-}
-
-.input:focus {
-  border-color: #42b983;
-  box-shadow: 0 0 5px rgba(66, 185, 131, 0.4);
 }
 
 .btn {
   width: 100%;
   padding: 12px;
-  margin-top: 10px;
   background: #42b983;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
 }
 
 .btn:hover {
