@@ -1,9 +1,124 @@
 <template>
-  <div>
-    <h2>CasinoPlaza</h2>
-    <p>Welcome! You are logged in.</p>
+  <div class="wrapper">
+    <div class="card">
+      <h2>Casino Plaza</h2>
+      <p>Welcome! You are logged in.</p>
+
+      <!-- STATUS -->
+      <div class="stats">
+        <p>Credits: <strong>{{ game.credits }}</strong></p>
+        <p>Wallet: <strong>{{ game.wallet }}</strong></p>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions">
+        <button @click="handleStartSession" :disabled="game.is_active">Start Session</button>
+        <button @click="handleSpin" :disabled="!game.is_active">Spin</button>
+        <button @click="handleCashout" :disabled="!game.is_active">Cashout</button>
+      </div>
+
+      <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="game.is_active" class="info">Session already active</p>
+
+      <!-- RESULT -->
+      <div v-if="game.result" class="result">
+        <p>Symbols: {{ game.result.symbols.join(" | ") }}</p>
+        <p>Reward: {{ game.result.reward }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { useGameStore } from "../stores/game";
+
+const game = useGameStore();
+const error = ref("");
+
+const handleStartSession = async () => {
+  error.value = "";
+
+  try {
+    await game.startSession();
+  } catch (err) {
+    error.value = err.response?.data?.detail || "Something went wrong";
+  }
+};
+
+const handleSpin = async () => {
+  error.value = "";
+
+  try {
+    await game.spin();
+  } catch (err) {
+    error.value = err.response?.data?.detail || "Spin failed";
+  }
+};
+
+const handleCashout = async () => {
+  error.value = "";
+
+  try {
+    await game.cashout();
+  } catch (err) {
+    error.value = err.response?.data?.detail || "Cashout failed";
+  }
+};
+
+onMounted(() => {
+  game.fetchStatus();
+});
 </script>
+
+<style scoped>
+.wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1e1e2f;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+}
+
+.stats {
+  margin: 15px 0;
+}
+
+.actions button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  background: #42b983;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background: #369870;
+}
+
+.result {
+  margin-top: 15px;
+}
+
+.error {
+  margin-top: 10px;
+  color: red;
+  font-size: 14px;
+}
+
+.info {
+  margin-top: 10px;
+  color: #555;
+  font-size: 13px;
+}
+</style>
