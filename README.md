@@ -10,6 +10,7 @@ The backend acts as the source of truth for all game logic, including session ha
 ## Live Application
 - **Frontend:** https://casinoplaza.vercel.app/
 - **Backend:** https://sushmavankhede.pythonanywhere.com/api/
+- **API Health Check:** https://sushmavankhede.pythonanywhere.com/
 
 ---
 
