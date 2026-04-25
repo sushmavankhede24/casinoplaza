@@ -4,6 +4,7 @@ import API from "../services/api";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: localStorage.getItem("token") || null,
+    username: localStorage.getItem("username") || null,
     isAuthenticated: !!localStorage.getItem("token"),
   }),
 
@@ -16,14 +17,18 @@ export const useAuthStore = defineStore("auth", {
 
       this.token = res.data.access;
       this.isAuthenticated = true;
+      this.username = username;
 
       localStorage.setItem("token", this.token);
+      localStorage.setItem("username", username); 
     },
 
     logout() {
       this.token = null;
+      this.username = null;
       this.isAuthenticated = false;
       localStorage.removeItem("token");
+      localStorage.removeItem("username");
     },
   },
 });

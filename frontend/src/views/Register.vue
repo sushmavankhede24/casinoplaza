@@ -44,10 +44,15 @@ const handleRegister = async () => {
     alert("Registration successful!");
     router.push("/login");
   } catch (err) {
-    error.value =
-      err.response?.data?.username?.[0] ||
-      err.response?.data?.password?.[0] ||
-      "Registration failed";
+    const data = err.response?.data;
+
+    if (data?.username) {
+    error.value = "Username already in use.";
+  } else if (data?.password) {
+    error.value = "Password must be at least 8 characters long.";
+  } else {
+    error.value = data?.detail || "Registration failed";
+  }
   }
 };
 

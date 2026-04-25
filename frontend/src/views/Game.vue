@@ -8,7 +8,7 @@
 
      <div class="card">
       <h2>Casino Plaza</h2>
-      <p>Welcome! You are logged in.</p>
+      <p>Welcome {{ username }}! You are logged in.</p>
 
       <!-- STATUS -->
       <div class="stats">
@@ -49,6 +49,7 @@ const game = useGameStore();
 const error = ref("");
 const auth = useAuthStore();
 const router = useRouter();
+const username = auth.username || "Player";
 
 const handleLogout = () => {
   auth.logout();
