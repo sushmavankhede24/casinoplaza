@@ -1,9 +1,15 @@
 # CasinoPlaza
 
-Full-stack slot machine game built with **Django (Backend)** and **Vue 3 (Frontend)**.  
+A full-stack slot machine game built with **Django (Backend)** and **Vue 3 (Frontend)**.  
 Users can register, log in, play a session-based game, and manage their credits and wallet balance.
 
 The backend acts as the source of truth for all game logic, including session handling and reroll behavior.
+
+---
+
+## Live Application
+- **Frontend:** https://casinoplaza.vercel.app/
+- **Backend:** https://sushmavankhede.pythonanywhere.com/api/
 
 ---
 
@@ -67,12 +73,35 @@ Rerolling is handled on the backend and is not visible to the user.
 
 ---
 
+## API Endpoints
+
+Base URL: https://sushmavankhede.pythonanywhere.com/api/
+
+- **POST** /register/ — Register a new user
+- **POST** /token/ — Login and receive JWT tokens
+- **POST** /token/refresh/ — Refresh access token
+- **POST** /start-session/ — Start a new session
+- **POST** /spin/ — Spin the slot machine
+- **POST** /cashout/ — Cash out credits
+- **GET** /status/ — Get current session status
+
+---
+
 ## Tech Stack
 
 - **Backend:** Django, Django REST Framework  
 - **Frontend:** Vue 3 (Vite, Pinia)  
 - **Database:** SQLite  
 - **Authentication:** JWT
+
+---
+
+## Deployment
+
+- Backend deployed on PythonAnywhere
+- Frontend deployed on Vercel
+
+The frontend communicates with the backend via REST APIs.
 
 ---
 
@@ -101,7 +130,7 @@ python manage.py migrate
 python manage.py runserver
 
 ```
-Runs on: http://127.0.0.1:8000/
+Runs on: http://127.0.0.1:8000/ (local development)
 
 ### Frontend
 
@@ -116,12 +145,13 @@ npm install
 npm run dev   
 
 ```
-Runs on: http://localhost:5173/
+Runs on: http://localhost:5173/ (local development)
 
 ### Frontend - Backend Communication
 
 The frontend communicates with the backend API at:
-http://127.0.0.1:8000/
+- Local: http://127.0.0.1:8000/api/
+- Production: https://sushmavankhede.pythonanywhere.com/api/
 
 Make sure CORS is properly configured in the backend to allow requests from: http://localhost:5173.
 
@@ -131,7 +161,7 @@ Create a .env file in the backend:
 ```bash
 
 SECRET_KEY=your-secret-key
-DEBUG=True
+DEBUG=True # for local development
 
 ```
 
@@ -150,7 +180,6 @@ DEBUG=True
 - Add leaderboard or scoring system
 - Add game history / transaction tracking
 - Improve UI with animations
-- Deploy frontend and backend in production
 - Containerize the application using Docker for easier setup and deployment
 
 ## Author
